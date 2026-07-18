@@ -6,7 +6,7 @@ const { authenticate, authorize } = require('../middlewares/auth');
 const { validateLearnerId } = require('../middlewares/validate');
 
 router.use(authenticate);
-router.use(authorize(['admin'])); // Only admins can manage nudges
+router.use(authorize(['admin'])); // Only admins can manage nudges. this option can be modified as well
 
 router.post('/:id/suppress', validateLearnerId, suppressNudge);
 router.post('/:id/resend', validateLearnerId, resendNudge);

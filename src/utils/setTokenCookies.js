@@ -1,4 +1,3 @@
-
 // Set cookies
 const jwt = require('jsonwebtoken');
 const setTokenCookies= (res, tokens) => {
