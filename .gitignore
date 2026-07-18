@@ -1,0 +1,3 @@
+/node_modules
+.env
+populateDB_Script.js
