@@ -1,8 +1,11 @@
 
-
 const Learner = require('../models/Learner');
+const Score = require('../models/Score');
+const Nudge = require('../models/Nudge');
+const logger = require('../utils/logger');
 
-// Get all learners with optional filtering, sorting, pagination
+
+// GET - Get all learners
 const getAllLearners = async (req, res, next) => {
   try {
     const { status, sort, order, limit = 100, page = 1 } = req.query;
@@ -74,4 +77,159 @@ const getLearnerById = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllLearners, getDashboardStats, getLearnerById };
+// POST - Create learner
+const createLearner = async (req, res, next) => {
+  try {
+    const { learnerId, name, email, metrics } = req.body;
+    
+    // Check if learnerId exists
+    const existing = await Learner.findOne({ learnerId });
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        error: 'Learner ID already exists'
+      });
+    }
+    
+    // Check if email exists
+    const emailExists = await Learner.findOne({ email });
+    if (emailExists) {
+      return res.status(409).json({
+        success: false,
+        error: 'Email already in use'
+      });
+    }
+    
+    const learner = new Learner({
+      learnerId,
+      name,
+      email,
+      metrics: metrics || {
+        totalLogins: 0,
+        assignmentsCompleted: 0,
+        totalAssignments: 0,
+        lastActivityDate: new Date()
+      },
+      currentStatus: 'Active'
+    });
+    
+    await learner.save();
+    
+    logger.info('Learner created', { learnerId, name, email });
+    
+    res.status(201).json({
+      success: true,
+      message: 'Learner created successfully',
+      data: learner
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT - Update learner
+const updateLearner = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const updateData = req.body;
+    
+    // Find the learner
+    const learner = await Learner.findOne({ 
+      learnerId: id,
+    });
+    
+    if (!learner) {
+      return res.status(404).json({
+        success: false,
+        error: 'Learner not found'
+      });
+    }
+    
+    // Prevent updating the learnerId
+    delete updateData.learnerId;
+    delete updateData._id;
+    delete updateData.createdAt;
+    delete updateData.isDeleted;
+    delete updateData.deletedAt;
+    
+    // Check if email is being changed and is already taken
+    if (updateData.email && updateData.email !== learner.email) {
+      const emailExists = await Learner.findOne({
+        email: updateData.email,
+        learnerId: { $ne: id },
+        isDeleted: false
+      });
+      if (emailExists) {
+        return res.status(409).json({
+          success: false,
+          error: 'Email already in use by another learner'
+        });
+      }
+    }
+    
+    // Update the learner
+    const updatedLearner = await Learner.findOneAndUpdate(
+      { learnerId: id },
+      { $set: updateData },
+      { 
+        new: true,
+        runValidators: true
+      }
+    );
+    
+    logger.info('Learner updated', { learnerId: id, updates: Object.keys(updateData) });
+    
+    res.json({
+      success: true,
+      message: 'Learner updated successfully',
+      data: updatedLearner
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+};
+
+// DELETE - Delete learner
+const deleteLearner = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    // Find the learner
+    const learner = await Learner.findOne({ 
+      learnerId: id,
+    });
+    
+    if (!learner) {
+      return res.status(404).json({
+        success: false,
+        error: 'Learner not found'
+      });
+    }
+    
+    //Hard delete (remove completely)
+    await Learner.deleteOne({ learnerId: id });
+    
+    // Clean up related data
+    await Score.deleteMany({ learnerId: id });
+    await Nudge.deleteMany({ learnerId: id });
+    
+    logger.info('Learner deleted (hard delete)', { learnerId: id, name: learner.name });
+    
+    res.json({
+      success: true,
+      message: `Learner ${id} deleted successfully`,
+      data: {
+        learnerId: id,
+        name: learner.name,
+        deletedAt: new Date().toISOString()
+      }
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAllLearners, getDashboardStats, getLearnerById, createLearner, updateLearner, deleteLearner };

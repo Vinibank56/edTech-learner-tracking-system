@@ -104,9 +104,16 @@ const refresh = async (req, res, next) => {
       { _id: user._id },
       {
         $pull: { refreshTokens: refreshToken },
+      }
+    );
+  
+    await User.updateOne(
+      { _id: user._id },
+      {
         $push: { refreshTokens: newTokens.refreshToken }
       }
     );
+
     setTokenCookies(res, newTokens);
     
     res.json({ success: true });

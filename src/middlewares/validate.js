@@ -2,7 +2,7 @@
 const { body, param, query, validationResult } = require('express-validator');
 
 // Validate signup
-exports.validateSignup = [
+const validateSignup = [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 8 }),
   body('name').notEmpty().trim(),
@@ -19,7 +19,7 @@ exports.validateSignup = [
 ];
 
 // Validate login
-exports.validateLogin = [
+const validateLogin = [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty(),
   (req, res, next) => {
@@ -35,7 +35,7 @@ exports.validateLogin = [
 ];
 
 // Validate ID parameter
-exports.validateLearnerId = [
+const validateLearnerId = [
   param('id').notEmpty().isString(),
   (req, res, next) => {
     const errors = validationResult(req);
@@ -48,3 +48,5 @@ exports.validateLearnerId = [
     next();
   }
 ];
+
+module.exports= { validateSignup, validateLogin, validateLearnerId };
