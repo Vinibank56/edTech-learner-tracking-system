@@ -38,7 +38,10 @@ const getNudgeHistory = async (req, res, next) => {
       .limit(parseInt(limit));
       
       if(!nudges){
-        res.status(401).json({message: `user with this id: ${learnerId} cannot be found`});
+        res.status(401).json({
+          success: false,
+          message: `user with this id: ${learnerId} cannot be found`
+        });
       }
     
     res.json({ success: true, data: nudges });
