@@ -28,7 +28,7 @@ const signup = async (req, res, next) => {
       email: email.toLowerCase(),
       password: hashedPassword,
       name,
-      role: role // First user is admin
+      role // First user is admin
     });
     await user.save();
     
