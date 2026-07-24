@@ -4,7 +4,7 @@ const Nudge = require('../models/Nudge');
 
 const suppressNudge = async (req, res, next) => {
   try {
-    const { learnerId } = req.params;
+    const learnerId  = req.params.id;
     const adminId = req.user.userId;
     
     const result = await NudgeService.suppressNudge(learnerId, adminId);
@@ -17,7 +17,7 @@ const suppressNudge = async (req, res, next) => {
 
 const resendNudge = async (req, res, next) => {
   try {
-    const { learnerId } = req.params;
+    const learnerId  = req.params.id;
     const adminId = req.user.userId;
     
     const result = await NudgeService.resendNudge(learnerId, adminId);
