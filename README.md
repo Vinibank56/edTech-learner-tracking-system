@@ -25,4 +25,4 @@
 - bcrypt password hashing
 - Token rotation
 - Refresh token revocation
-- Role-based authorization"
+- Role-based authorization

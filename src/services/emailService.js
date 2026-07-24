@@ -18,7 +18,7 @@ class EmailService {
       
       const msg = {
         to: learner.email,
-        from: process.env.FROM_EMAIL || 'noreply@momentumiq.com',
+        from: process.env.FROM_EMAIL || 'noreply.momentumiq@gmail.com',
         subject: '📚 We miss you! Stay on track with your learning',
         html: this.getNudgeTemplate(learner),
         text: this.getNudgeText(learner)
