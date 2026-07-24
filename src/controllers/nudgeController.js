@@ -30,10 +30,10 @@ const resendNudge = async (req, res, next) => {
 
 const getNudgeHistory = async (req, res, next) => {
   try {
-    const { learnerId } = req.params;
+    const  learnerId  = req.params.id;
     const { limit = 10 } = req.query;
     
-    const nudges = await Nudge.find({ learnerId })
+    const nudges = await Nudge.findOne({ learnerId })
       .sort({ sentAt: -1 })
       .limit(parseInt(limit));
       
