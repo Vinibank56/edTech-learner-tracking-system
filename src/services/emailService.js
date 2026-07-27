@@ -68,7 +68,7 @@ class EmailService {
             <p>We noticed you haven't been active in your course lately. Your learning journey is important to us!</p>
             <p>Don't let your progress slip away. <strong>Log in today</strong> and continue where you left off.</p>
             <p style="text-align: center; margin: 30px 0;">
-              <a href="#" class="button">Continue Learning Now</a>
+              <a href="https://momentum-iqgroup1capstoneproject.netlify.app/" class="button">Continue Learning Now</a>
             </p>
             <p>Complete just one assignment or watch one video - every step counts!</p>
             <p>We're here to help you succeed. 💪</p>
